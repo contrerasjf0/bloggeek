@@ -24,15 +24,54 @@ class Post {
                 });
   }
 
-  consultarTodosPost () {
-    
+  getAllPost () {
+    this.db.collection('posts')
+        .onSnapshot(querySnapshot => {
+            $('#posts').empty();
+            
+            if (querySnapshot.empty) {
+                $('#posts').append(this.getTemplateEmptyPost());
+            } else {
+                querySnapshot.forEach(post => {
+                    let postHtml = this.getPostTemplate(
+                                post.data().author,
+                                post.data().title,
+                                post.data().description,
+                                post.data().videoLink,
+                                post.data().imagLink,
+                                Utilidad.getDate(post.data().date.toDate())
+                            );
+                $('#posts').append(postHtml);
+          })
+        }
+      });
   }
 
-  consultarPostxUsuario (emailUser) {
-    
+  getPostByUser (userEmail) {
+    this.db.collection('posts')
+        .where('author', '==', userEmail)
+        .onSnapshot(querySnapshot => {
+            $('#posts').empty();
+            
+            if (querySnapshot.empty) {
+                $('#posts').append(this.getTemplateEmptyPost());
+            } else {
+                querySnapshot.forEach(post => {
+                    let postHtml = this.getPostTemplate(
+                                post.data().author,
+                                post.data().title,
+                                post.data().description,
+                                post.data().videoLink,
+                                post.data().imagLink,
+                                Utilidad.getDate(post.data().date.toDate())
+                            );
+                $('#posts').append(postHtml);
+          })
+        }
+      });
   }
 
-  obtenerTemplatePostVacio () {
+  getTemplateEmptyPost () {
     return `<article class="post">
       <div class="post-titulo">
           <h5>Crea el primer Post a la comunidad</h5>
@@ -60,18 +99,18 @@ class Post {
   </article>`
   }
 
-  obtenerPostTemplate (
-    autor,
-    titulo,
-    descripcion,
+  getPostTemplate (
+    author,
+    title,
+    description,
     videoLink,
-    imagenLink,
-    fecha
+    imgLink,
+    date
   ) {
-    if (imagenLink) {
+    if (imgLink) {
       return `<article class="post">
             <div class="post-titulo">
-                <h5>${titulo}</h5>
+                <h5>${title}</h5>
             </div>
             <div class="post-calificacion">
                 <a class="post-estrellita-llena" href="*"></a>
@@ -81,22 +120,22 @@ class Post {
                 <a class="post-estrellita-vacia" href="*"></a>
             </div>
             <div class="post-video">                
-                <img id="imgVideo" src='${imagenLink}' class="post-imagen-video" 
+                <img id="imgVideo" src='${imgLink}' class="post-imagen-video" 
                     alt="Imagen Video">     
             </div>
             <div class="post-videolink">
                 <a href="${videoLink}" target="blank">Ver Video</a>                            
             </div>
             <div class="post-descripcion">
-                <p>${descripcion}</p>
+                <p>${description}</p>
             </div>
             <div class="post-footer container">
                 <div class="row">
                     <div class="col m6">
-                        Fecha: ${fecha}
+                        Fecha: ${date}
                     </div>
                     <div class="col m6">
-                        Autor: ${autor}
+                        Autor: ${author}
                     </div>        
                 </div>
             </div>
@@ -105,7 +144,7 @@ class Post {
 
     return `<article class="post">
                 <div class="post-titulo">
-                    <h5>${titulo}</h5>
+                    <h5>${title}</h5>
                 </div>
                 <div class="post-calificacion">
                     <a class="post-estrellita-llena" href="*"></a>
@@ -123,15 +162,15 @@ class Post {
                     Video
                 </div>
                 <div class="post-descripcion">
-                    <p>${descripcion}</p>
+                    <p>${description}</p>
                 </div>
                 <div class="post-footer container">
                     <div class="row">
                         <div class="col m6">
-                            Fecha: ${fecha}
+                            Fecha: ${date}
                         </div>
                         <div class="col m6">
-                            Autor: ${autor}
+                            Autor: ${author}
                         </div>        
                     </div>
                 </div>

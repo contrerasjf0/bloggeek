@@ -15,36 +15,41 @@ $(() => {
   })
 
   $('#btnRegistroPost').click(() => {
-    const post = new Post()
 
-    // TODO: Validar que el usuario esta autenticado
+    const post = new Post();
+    const user = firebase.auth().currentUser;
 
-    // Materialize.toast(`Para crear el post debes estar autenticado`, 4000)
+    if(user == null){
+      Materialize.toast(`To create the post you have to be authenticated`, 4000);
+      return;
+    }
 
-    const titulo = $('#tituloNewPost').val()
-    const descripcion = $('#descripcionNewPost').val()
-    const videoLink = $('#linkVideoNewPost').val()
-    const imagenLink = sessionStorage.getItem('imgNewPost') == 'null'
+    
+
+    const title = $('#tituloNewPost').val();
+    const description = $('#descripcionNewPost').val();
+    const videoLink = $('#linkVideoNewPost').val();
+    const imgLink = sessionStorage.getItem('imgNewPost') == 'null'
       ? null
-      : sessionStorage.getItem('imgNewPost')
+      : sessionStorage.getItem('imgNewPost');
 
     post
       .crearPost(
         user.uid,
         user.email,
-        titulo,
-        descripcion,
-        imagenLink,
+        title,
+        description,
+        imgLink,
         videoLink
       )
       .then(resp => {
-        Materialize.toast(`Post creado correctamente`, 4000)
+        Materialize.toast(`The Post was created`, 4000)
         $('.modal').modal('close')
       })
       .catch(err => {
         Materialize.toast(`Error => ${err}`, 4000)
-      })
-  })
+      });
+  }) 
 
   $('#btnUploadFile').on('change', e => {
     // TODO: Validar que el usuario esta autenticado

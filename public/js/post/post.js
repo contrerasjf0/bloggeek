@@ -1,11 +1,27 @@
 class Post {
   constructor () {
-      // TODO inicializar firestore y settings
+    this.db = firebase.firestore();
 
   }
 
-  crearPost (uid, emailUser, titulo, descripcion, imagenLink, videoLink) {
-    
+  crearPost (uid, userEmail, title, description, imgLink, videoLink) {
+    return this.db
+                .collection('posts')
+                .add({
+                    uid,
+                    author: userEmail,
+                    title,
+                    description,
+                    imgLink,
+                    videoLink,
+                    date: firebase.firestore.FieldValue.serverTimestamp()
+                })
+                .then(refDoc => {
+                    console.log(`Post Id=> ${refDoc.id}`);
+                })
+                .catch(error => {
+                    console.error(`Error to create post => ${error}`);
+                });
   }
 
   consultarTodosPost () {

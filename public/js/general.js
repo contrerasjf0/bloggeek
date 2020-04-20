@@ -1,11 +1,44 @@
 $(() => {
-  $('.tooltipped').tooltip({ delay: 50 })
-  $('.modal').modal()
-
-  // TODO: Adicionar el service worker
+  $('.tooltipped').tooltip({ delay: 50 });
+  $('.modal').modal();
 
   // Init Firebase nuevamente
   firebase.initializeApp(firebaseConfig);
+
+  navigator.serviceWorker
+    .register('notitificaciones-sw.js')
+    .then(registro => {
+      console.log('service worker was registred');
+      firebase.messaging().useServiceWorker(registro);
+    })
+    .catch(error => {
+      console.error(`Error to register the service worker => ${error}`);
+    });
+
+    const messaging = firebase.messaging();
+
+  // Registrar credenciales web
+  messaging.usePublicVapidKey('BMzeoSHtJkMEFYxLRePeS3Qq323Vw7E_59zg7IyWlphwgOQGq3PYwlT0use_qOTtQxHS3L5JVpYT8loc7vLntSk');
+
+  // Solicitar permisos para las notificaciones
+  messaging
+    .requestPermission()
+    .then(() => {
+      console.log('permits granted');
+      return messaging.getToken();
+    })
+    .then(token => {
+      const db = firebase.firestore();
+      
+      db.collection('tokens')
+        .doc(token)
+        .set({
+          token: token
+        })
+        .catch(error => {
+          console.error(`Error to insert the token to the DB => ${error}`);
+        });
+    });
 
   // TODO: Registrar LLave publica de messaging
 

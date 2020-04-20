@@ -26,6 +26,8 @@ class Post {
 
   getAllPost () {
     this.db.collection('posts')
+        .orderBy('date', 'asc')
+        .orderBy('title', 'asc')
         .onSnapshot(querySnapshot => {
             $('#posts').empty();
             
@@ -49,6 +51,7 @@ class Post {
 
   getPostByUser (userEmail) {
     this.db.collection('posts')
+        .orderBy('date', 'asc')
         .where('author', '==', userEmail)
         .onSnapshot(querySnapshot => {
             $('#posts').empty();

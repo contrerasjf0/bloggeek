@@ -6,7 +6,7 @@ $(() => {
   firebase.initializeApp(firebaseConfig);
 
   navigator.serviceWorker
-    .register('notitificaciones-sw.js')
+    .register('notificaciones-sw.js')
     .then(registro => {
       console.log('service worker was registred');
       firebase.messaging().useServiceWorker(registro);
@@ -40,11 +40,32 @@ $(() => {
         });
     });
 
-  // TODO: Registrar LLave publica de messaging
+// Obtener el token cuando se refresque
 
-  // TODO: Solicitar permisos para las notificaciones
+    messaging.onTokenRefresh(() => {
 
-  // TODO: Recibir las notificaciones cuando el usuario esta foreground
+      messaging.getToken()
+          .then(token => {
+            const db = firebase.firestore();
+      
+            db.collection('tokens')
+              .doc(token)
+              .set({
+                token: token
+              })
+              .catch(error => {
+                console.error(`Error to insert the token to the DB => ${error}`);
+              });
+          });
+
+    });
+
+
+  // Recibir las notificaciones cuando el usuario esta foreground
+
+  messaging.onMessage(payload => {
+    Materialize.toast(`Ya tenemos un nuevo post. Revisalo, se llama ${payload.data.title}`, 6000);
+  })
 
   // TODO: Recibir las notificaciones cuando el usuario esta background
 

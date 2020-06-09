@@ -6,7 +6,7 @@ $(() => {
   firebase.initializeApp(firebaseConfig);
 
   navigator.serviceWorker
-    .register('notificaciones-sw.js')
+    .register('../notificaciones-sw.js')
     .then(registro => {
       console.log('service worker was registred');
       firebase.messaging().useServiceWorker(registro);
